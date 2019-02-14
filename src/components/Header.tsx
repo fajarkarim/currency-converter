@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from "react"
+import React, {ChangeEvent, KeyboardEvent} from "react"
 
 interface PropsType {
     onChange: (event: ChangeEvent<HTMLInputElement>) => void,
@@ -25,6 +25,14 @@ class Header extends React.PureComponent<PropsType, StatesType> {
         })
     }
 
+    handleOnKeyUp = (e: KeyboardEvent<HTMLElement>) => {
+        if (e.key === "Enter") {
+            this.setState({
+                isEdit: !this.state.isEdit
+            })
+        }
+    }
+
     render () {
         const { isEdit } = this.state
         const { onChange, value } = this.props
@@ -35,10 +43,10 @@ class Header extends React.PureComponent<PropsType, StatesType> {
                 </div>
                 <div>                    
                     {
-                        isEdit ? (<input type="number" onChange={onChange} value={value} />) 
+                        isEdit ? (<input type="number" onChange={onChange} onKeyUp={this.handleOnKeyUp} value={value} />) 
                             : (<div className="header__currency">
                                     <span>USD</span>
-                                    <span>{value}</span>
+                                    <span onClick={this.handleOnClick}>{value}</span>
                                 </div>)
                     }
                     

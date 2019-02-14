@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEvent } from "react"
+import React, { ChangeEvent, } from "react"
 
 import { CurrencyRate } from "../core/entities"
 

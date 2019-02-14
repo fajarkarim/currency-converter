@@ -16,7 +16,7 @@ const defaultProps = {
 }
 
 const CurrencyCard = (props: PropsType) => {
-    const { exchangeRate, currency, rate, onRemove } = props
+    const { exchangeRate, currency, rate, onRemove } = props    
     let currencyRate = new CurrencyRate(currency, exchangeRate, rate)    
     return (
         <div className="card">
@@ -32,7 +32,7 @@ const CurrencyCard = (props: PropsType) => {
                 </div>
 
                 <div className="card__currency_rate">
-                    <span>1 USD = {currency} {rate}</span>
+                    <span>1 USD = {currency} {exchangeRate}</span>
                 </div>
             </div>
             

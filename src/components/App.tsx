@@ -33,7 +33,7 @@ export default class App extends React.PureComponent<PropsType, StatesType> {
         rates: []
     }
 
-    handleInitialExchangeValueOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    handleInitialExchangeValueOnChange = (event: ChangeEvent<HTMLInputElement>) => {        
         this.setState({
             initialExchangeValue: Number(event.target.value)
         })
