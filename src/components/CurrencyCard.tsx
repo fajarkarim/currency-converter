@@ -1,9 +1,9 @@
-import React from "react"
+import React, { MouseEvent } from "react"
 
 import { CurrencyRate } from "../core/entities"
 
 interface PropsType {
-    onRemove: (currencyRate: CurrencyRate)  => void,
+    onRemove: (currency: string) => (e: MouseEvent<HTMLElement>) => void,
     currency: string,
     rate: number,
     exchangeRate: number
@@ -37,7 +37,7 @@ const CurrencyCard = (props: PropsType) => {
             </div>
             
             <div className="card__remove_button">
-                <button>-</button>
+                <button onClick={onRemove(currency)}>-</button>
             </div>
             
         </div>

@@ -7,13 +7,18 @@ import CurrencyCardWrapper from "../components/CurrencyCardWrapper"
 import ListCurreciesExchange from "../components/ListCurrencies"
 import InputCurrency from "../components/InputCurrency"
 
+// Entity
 import { CurrencyRate } from "../core/entities"
+import { CurrencyExchangeRatesType } from "./InputCurrency" 
 
+// API
+import { getForexRates } from "../core/services"
 
 interface StatesType {
     initialExchangeValue: number,    
-    currencyExchangeRates: Array<CurrencyRate>,    
-    selectedCurrency: object
+    currencyExchangeRates: Array<any>,    
+    selectedCurrency: object,
+    rates: Array<CurrencyExchangeRatesType>
 }
 
 interface PropsType {}
@@ -23,8 +28,9 @@ export default class App extends React.PureComponent<PropsType, StatesType> {
 
     state = {
         initialExchangeValue: 5,
-        currencyExchangeRates: [ new CurrencyRate("EUR", 0.32, 5) ],        
-        selectedCurrency: {}
+        currencyExchangeRates: [],        
+        selectedCurrency: {},
+        rates: []
     }
 
     handleInitialExchangeValueOnChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -33,23 +39,59 @@ export default class App extends React.PureComponent<PropsType, StatesType> {
         })
     }
 
-    handleCurrencyRateOnRemove = (currencyRate: CurrencyRate) => (e: MouseEvent<HTMLElement>) => {
-        console.log("currency Rate", currencyRate)
+    handleCurrencyRateOnRemove = (currency: string) => (e: MouseEvent<HTMLElement>) => {        
+        let currentState = this.state.currencyExchangeRates
+        let notMatchCurrency = currentState.filter((curr:CurrencyRate) => curr.currency !== currency)
+        this.setState({
+            currencyExchangeRates: notMatchCurrency
+        })
     }
 
-    handleOnSubmit = (currencyRate: CurrencyRate) => {
-        console.log("currency rate add !!")
+    handleOnSubmit = (currencyRate: any) => {        
+        let { currency } = currencyRate
+        let currentState = this.state.currencyExchangeRates
+        let matchCurrency = currentState.filter((curr:CurrencyRate) => curr.currency === currency)
+        if (matchCurrency.length === 0) {
+            this.setState({
+                currencyExchangeRates: [...this.state.currencyExchangeRates, ...[currencyRate]]
+            })     
+        }
+    }
+
+    fetchCurrencyExchangeRates = async () => {
+        try {
+            let resp = await getForexRates()
+            let rawRates = resp.rates            
+            let keys = Object.keys(rawRates)
+            let rates = keys.map(key => {
+                let value = rawRates[key]
+                return {
+                    label: key,
+                    value
+                }
+            })
+            this.setState({
+                rates
+            })
+            
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    componentDidMount () {
+        this.fetchCurrencyExchangeRates()
     }
 
     render () {
-        const { initialExchangeValue, currencyExchangeRates } = this.state
+        const { initialExchangeValue, currencyExchangeRates, rates } = this.state
         return (
             <AppWrapper>
                 <Header onChange={this.handleInitialExchangeValueOnChange} value={initialExchangeValue}/>
                 <CurrencyCardWrapper>
                     <ListCurreciesExchange data={currencyExchangeRates} onRemove={this.handleCurrencyRateOnRemove} />
                 </CurrencyCardWrapper>
-                <InputCurrency onSubmit={this.handleOnSubmit} />
+                <InputCurrency onSubmit={this.handleOnSubmit} exchangeRates={rates} initialExchangeValue={initialExchangeValue}/>
             </AppWrapper>
         )
     }

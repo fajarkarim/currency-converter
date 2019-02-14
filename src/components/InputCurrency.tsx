@@ -2,19 +2,34 @@ import React, { ChangeEvent, MouseEvent } from "react"
 
 import { CurrencyRate } from "../core/entities"
 
+export interface CurrencyExchangeRatesType {
+    label: string,
+    value: number
+}
+
+
 interface PropsType  {
     onSubmit: (currencyRate: CurrencyRate) => void,    
+    exchangeRates: Array<CurrencyExchangeRatesType>,
+    initialExchangeValue: number
 }
 
 interface StatesType {
     addNewCurrency: boolean,
-    selectedCurrency: string
+    selectedCurrency: CurrencyExchangeRatesType
 }
 
 class InputCurrency extends React.PureComponent<PropsType, StatesType> {
+    static defaultProps = {
+        exchangeRates: []
+    }
+
     state = {
         addNewCurrency: false,
-        selectedCurrency: ""
+        selectedCurrency: {
+            label: "",
+            value: 0
+        }
     }
 
     handleOnClick = () =>  {
@@ -23,28 +38,41 @@ class InputCurrency extends React.PureComponent<PropsType, StatesType> {
         })
     }
 
-    handleSelectOnChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    handleSelectOnChange = (e: ChangeEvent<HTMLSelectElement>) => {            
+        let index = e.target.selectedIndex
+        let label = e.target[index].innerText
+        let value = Number(e.target.value)
+        
         this.setState({
-            selectedCurrency: e.target.value
+            selectedCurrency: {
+                label, 
+                value
+            }
         })        
     }
 
-    handleOnSubmit = (e: MouseEvent<HTMLElement>) => {
-        console.log("wkwkwk")
+    handleOnSubmit = () => {
+        let { selectedCurrency: { label, value }} = this.state
+        let { initialExchangeValue } = this.props
+        let currencyRate = new CurrencyRate(label, value, initialExchangeValue )
+        this.props.onSubmit(currencyRate)
     }
 
     render () {
-        const { addNewCurrency } = this.state             
+        const { addNewCurrency } = this.state          
+        const { exchangeRates } = this.props        
 
         return <div className="input">
         {
             addNewCurrency ? (
                 <div className="input__submit">
                     <select className="input__submit_select" onChange={this.handleSelectOnChange}>
-                        <option value="volvo">Volvo</option>
-                        <option value="saab">Saab</option>
-                        <option value="mercedes">Mercedes</option>
-                        <option value="audi">Audi</option>
+                        {
+                            exchangeRates.map((rate, idx) => {
+                                let {label, value} = rate
+                                return <option key={idx} value={value}>{label}</option>
+                            })
+                        }                        
                     </select>
 
                     <button className="input__submit_button" onClick={this.handleOnSubmit}>Submit</button>              
