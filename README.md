@@ -32,28 +32,7 @@ Make sure awesome-currency-app-container is running
 sudo docker attach awesome-currency-app-container
 ```
 
-### How To Test
-
-1. get into docker container
-2. run
-
-```
-yarn test
-```
-
-### Folder Structure
-
-I use Ducks folder structure.
-Pros:
-
-- I will be easier to me to find all depedency of a module
-- easier to move a component
-
-Cons:
-
-- There will be many sub folder if the module very compleks
-- should decide to move or promote a component or utils which used by many other component
-
 ### Code Structure
 
-All the logic and fetching api is controlled on the top of component modules. and the rest component receive it from props.
+Using Clean code architcture. The General rule of forex exchange app is on entity folder in src/core/entities.
+Inside core folder, there are several folder which are adapter, services, and entities. Adapter module have duty to translate bussiness rule into presentation in react. For example when we get data from eksternal api, the manipulation is on adapter module. In react framwork it happens in actions methods.
